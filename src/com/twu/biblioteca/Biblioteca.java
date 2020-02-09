@@ -64,10 +64,6 @@ public class Biblioteca {
         }
     }
 
-    public void checkoutBook(){
-        System.out.println("Which book would you like to check out?");
-    }
-
     public void displayMenuOptions(){
         System.out.println("\nMenu:");
         System.out.println("----");
@@ -108,16 +104,35 @@ public class Biblioteca {
 
     public void checkoutBook(String bookToCheckOut){
         // look for the book in the "available" list
-        // add the checked out book to the "checked out" list
-        checkedOutBooks.add(availableBooks.get(0));
-        // remove it from the "available" list
-        removeFromAvailable(bookToCheckOut);
+        List<Integer> bookIndex = getBookIndex(bookToCheckOut);
 
-
+        if(bookIndex.isEmpty() == false){
+            // add the checked out book to the "checked out" list
+            checkedOutBooks.add(availableBooks.get(bookIndex.get(0).intValue()));
+            // remove it from the "available" list
+            removeFromAvailable(bookIndex.get(0));
+            // print a success message
+            System.out.println("Thank you! Enjoy the book");
+        } else{
+            System.out.println("Sorry, that book is not available");
+        }
     }
 
-    public void removeFromAvailable(String bookToCheckOut){
-        availableBooks.
+    public void removeFromAvailable(int bookIndex){
+
+        availableBooks.remove(bookIndex);
+    }
+
+    private List<Integer> getBookIndex(String bookToCheckOut){
+
+        List<Integer> bookIndex = new ArrayList<>();
+
+        for(int i = 0; i < availableBooks.size(); i++){
+            if(bookToCheckOut.equals(availableBooks.get(i).getTitle())){
+                bookIndex.add(i);
+            }
+        }
+        return bookIndex;
     }
 
     public String getWelcomeMsg() {
