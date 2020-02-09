@@ -23,6 +23,7 @@ public class Biblioteca {
         this.menuOptions = new ArrayList<>();
         this.menuOptions.add("List of books");
         this.menuOptions.add("Checkout");
+        this.menuOptions.add("Return");
         this.menuOptions.add("Quit");
 
         this.checkedOutBooks = new ArrayList<>();
@@ -94,6 +95,11 @@ public class Biblioteca {
                 String bookToCheckOut = input.nextLine();
                 checkoutBook(bookToCheckOut);
                 break;
+            case "Return":
+                System.out.println("Which book would you like to return?");
+                String bookToReturn = input.nextLine();
+                returnBook(bookToReturn);
+                break;
             case "Quit":
                 quit = true;
                 System.out.println("Thank you for using Biblioteca");
@@ -104,13 +110,13 @@ public class Biblioteca {
 
     public void checkoutBook(String bookToCheckOut){
         // look for the book in the "available" list
-        List<Integer> bookIndex = getBookIndex(bookToCheckOut);
+        List<Integer> bookIndex = getBookIndex(bookToCheckOut, availableBooks);
 
         if(bookIndex.isEmpty() == false){
             // add the checked out book to the "checked out" list
             checkedOutBooks.add(availableBooks.get(bookIndex.get(0).intValue()));
             // remove it from the "available" list
-            removeFromAvailable(bookIndex.get(0));
+            availableBooks.remove(bookIndex.get(0).intValue());
             // print a success message
             System.out.println("Thank you! Enjoy the book");
         } else{
@@ -118,17 +124,29 @@ public class Biblioteca {
         }
     }
 
-    public void removeFromAvailable(int bookIndex){
+    public void returnBook(String bookToReturn){
+        // look for the book in the "checked out" list
+        List<Integer> bookIndex = getBookIndex(bookToReturn, checkedOutBooks);
 
-        availableBooks.remove(bookIndex);
+
+        if(bookIndex.isEmpty() == false){
+            // add the checked out book to the "available" list
+            availableBooks.add(checkedOutBooks.get(bookIndex.get(0).intValue()));
+            // remove it from the "checked out" list
+            checkedOutBooks.remove(bookIndex.get(0).intValue());
+            // print a success message
+            System.out.println("Thank you for returning the book");
+        } else{
+            System.out.println("This is not a valid book to return");
+        }
     }
 
-    private List<Integer> getBookIndex(String bookToCheckOut){
+    private List<Integer> getBookIndex(String bookToCheckOut, List<Book> listOfBooks){
 
         List<Integer> bookIndex = new ArrayList<>();
 
-        for(int i = 0; i < availableBooks.size(); i++){
-            if(bookToCheckOut.equals(availableBooks.get(i).getTitle())){
+        for(int i = 0; i < listOfBooks.size(); i++){
+            if(bookToCheckOut.equals(listOfBooks.get(i).getTitle())){
                 bookIndex.add(i);
             }
         }
