@@ -9,6 +9,8 @@ public class Biblioteca {
     private String welcomeMsg;
     private List<String> menuOptions;
     private List<Book> availableBooks;
+    private List<Movie> availableMovies;
+    private List<Movie> checkedOutMovies;
     private List<Book> checkedOutBooks;
     private boolean quit;
 
@@ -20,13 +22,22 @@ public class Biblioteca {
         this.availableBooks.add(new Book("The Shining", "Stephen King", "1977"));
         this.availableBooks.add(new Book("The Three Musketeers", "Alexandre Dumas", "1844"));
 
+        this.availableMovies = new ArrayList<>();
+        this.availableMovies.add(new Movie("The Godfather", "Francis Ford Coppola", "1972", "9"));
+        this.availableMovies.add(new Movie("Sleepless in Seattle", "Nora Ephron", "1993", "3"));
+        this.availableMovies.add(new Movie("The Birds", "Alfred Hitchcock", "1963", "5"));
+        this.availableMovies.add(new Movie("Home Alone", "Chris Columbus", "1990", "unrated"));
+        this.availableMovies.add(new Movie("Die Hard", "John McTiernan", "1988", "10"));
+
         this.menuOptions = new ArrayList<>();
         this.menuOptions.add("List of books");
+        this.menuOptions.add("List of movies");
         this.menuOptions.add("Checkout");
         this.menuOptions.add("Return");
         this.menuOptions.add("Quit");
 
         this.checkedOutBooks = new ArrayList<>();
+        this.checkedOutMovies = new ArrayList<>();
 
         this.welcomeMsg = "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore!\n";
         this.quit = false;
@@ -65,6 +76,17 @@ public class Biblioteca {
         }
     }
 
+    public void displayAvailableMovies(){
+        System.out.println("Available Movies:");
+        System.out.println("_______________\n");
+        String formatString = "%-20s  %-20s  %-10s %-8s %n";
+        System.out.format(formatString, "Title", "Director", "Released", "Rating\n");
+
+        for(Movie m : availableMovies) {
+            System.out.format(formatString, m.getMovieTitle(), m.getDirector(), m.getReleaseYear(), m.getRating());
+        }
+    }
+
     public void displayMenuOptions(){
         System.out.println("\nMenu:");
         System.out.println("----");
@@ -89,6 +111,9 @@ public class Biblioteca {
         switch(userSelection){
             case "List of books":
                 displayAvailableBooks();
+                break;
+            case "List of movies":
+                displayAvailableMovies();
                 break;
             case "Checkout":
                 System.out.println("Which book would you like to check out?");
