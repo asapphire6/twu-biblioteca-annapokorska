@@ -1,8 +1,8 @@
 package com.twu.biblioteca;
 
-public class Movie {
+public class Movie implements Title{
 
-    private String movieTitle;
+    private String title;
     private String director;
     private String releaseYear;
     private String rating;
@@ -11,19 +11,19 @@ public class Movie {
 
     }
 
-    public Movie(String movieTitle, String director, String releaseYear, String rating){
-        this.movieTitle = movieTitle;
+    public Movie(String title, String director, String releaseYear, String rating){
+        this.title = title;
         this.director = director;
         this. releaseYear = releaseYear;
         this.rating = rating;
     }
 
-    public String getMovieTitle() {
-        return movieTitle;
+    public String getTitle() {
+        return title;
     }
 
-    public void setMovieTitle(String movieTitle) {
-        this.movieTitle = movieTitle;
+    public void setTitle(String movieTitle) {
+        this.title = title;
     }
 
     public String getDirector() {
@@ -53,7 +53,7 @@ public class Movie {
     @Override
     public String toString() {
         return "Movie{" +
-                "movieTitle='" + movieTitle + '\'' +
+                "movieTitle='" + title + '\'' +
                 ", director='" + director + '\'' +
                 ", releaseYear='" + releaseYear + '\'' +
                 '}';

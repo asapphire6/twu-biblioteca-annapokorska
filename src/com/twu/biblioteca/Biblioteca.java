@@ -8,26 +8,23 @@ public class Biblioteca {
 
     private String welcomeMsg;
     private List<String> menuOptions;
-    private List<Book> availableBooks;
-    private List<Movie> availableMovies;
-    private List<Movie> checkedOutMovies;
-    private List<Book> checkedOutBooks;
+    private List<Title> availableTitles;
+    private List<Title> checkedOutTitles;
     private boolean quit;
 
     public Biblioteca(){
-        this.availableBooks = new ArrayList<>();
-        this.availableBooks.add(new Book("Romeo and Juliet", "William Shakespeare", "1595"));
-        this.availableBooks.add(new Book("Lord of the Rings", "J.R.R.Tolkien", "1954"));
-        this.availableBooks.add(new Book("Pride and Prejudice", "Jane Austen", "1813"));
-        this.availableBooks.add(new Book("The Shining", "Stephen King", "1977"));
-        this.availableBooks.add(new Book("The Three Musketeers", "Alexandre Dumas", "1844"));
+        this.availableTitles = new ArrayList<>();
+        this.availableTitles.add(new Book("Romeo and Juliet", "William Shakespeare", "1595"));
+        this.availableTitles.add(new Book("Lord of the Rings", "J.R.R.Tolkien", "1954"));
+        this.availableTitles.add(new Book("Pride and Prejudice", "Jane Austen", "1813"));
+        this.availableTitles.add(new Book("The Shining", "Stephen King", "1977"));
+        this.availableTitles.add(new Book("The Three Musketeers", "Alexandre Dumas", "1844"));
 
-        this.availableMovies = new ArrayList<>();
-        this.availableMovies.add(new Movie("The Godfather", "Francis Ford Coppola", "1972", "9"));
-        this.availableMovies.add(new Movie("Sleepless in Seattle", "Nora Ephron", "1993", "3"));
-        this.availableMovies.add(new Movie("The Birds", "Alfred Hitchcock", "1963", "5"));
-        this.availableMovies.add(new Movie("Home Alone", "Chris Columbus", "1990", "unrated"));
-        this.availableMovies.add(new Movie("Die Hard", "John McTiernan", "1988", "10"));
+        this.availableTitles.add(new Movie("The Godfather", "Francis Ford Coppola", "1972", "9"));
+        this.availableTitles.add(new Movie("Sleepless in Seattle", "Nora Ephron", "1993", "3"));
+        this.availableTitles.add(new Movie("The Birds", "Alfred Hitchcock", "1963", "5"));
+        this.availableTitles.add(new Movie("Home Alone", "Chris Columbus", "1990", "unrated"));
+        this.availableTitles.add(new Movie("Die Hard", "John McTiernan", "1988", "10"));
 
         this.menuOptions = new ArrayList<>();
         this.menuOptions.add("List of books");
@@ -36,8 +33,7 @@ public class Biblioteca {
         this.menuOptions.add("Return");
         this.menuOptions.add("Quit");
 
-        this.checkedOutBooks = new ArrayList<>();
-        this.checkedOutMovies = new ArrayList<>();
+        this.checkedOutTitles = new ArrayList<>();
 
         this.welcomeMsg = "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore!\n";
         this.quit = false;
@@ -61,30 +57,61 @@ public class Biblioteca {
         return welcomeMsg;
     }
 
-    public List<Book> getAvailableBooks() {
-        return availableBooks;
+    public List<Title> getAvailableTitles() {
+        return availableTitles;
     }
 
-    public void displayAvailableBooks(){
-        System.out.println("Available Books:");
-        System.out.println("_______________\n");
-        String formatString = "%-20s  %-20s  %-10s %n";
+    private void displayAvailableBooks(String formatString){
+
         System.out.format(formatString, "Title", "Author", "Published\n");
 
-        for(Book b : availableBooks) {
-            System.out.format(formatString, b.getTitle(), b.getAuthor(), b.getYear());
+        for(Title t : availableTitles) {
+            if(t.getClass().equals(Book.class)) {
+                Book b = (Book) t;
+                System.out.format(formatString, b.getTitle(), b.getAuthor(), b.getYear());
+            }
         }
     }
 
-    public void displayAvailableMovies(){
-        System.out.println("Available Movies:");
-        System.out.println("_______________\n");
-        String formatString = "%-20s  %-20s  %-10s %-8s %n";
+    public void displayAvailableTitles(String titleType){
+
+        String additionalFormatting = "";
+
+        if(titleType.equals("Book")){
+            createListHeading("Books:");
+            displayAvailableBooks(createListFormatting(additionalFormatting));
+        } else if(titleType.equals("Movie")){
+            createListHeading("Movies:");
+            additionalFormatting = " %-8s";
+            displayAvailableMovies(createListFormatting(additionalFormatting));
+        }
+    }
+
+    private void displayAvailableMovies(String formatString){
+
         System.out.format(formatString, "Title", "Director", "Released", "Rating\n");
 
-        for(Movie m : availableMovies) {
-            System.out.format(formatString, m.getMovieTitle(), m.getDirector(), m.getReleaseYear(), m.getRating());
+        for(Title t : availableTitles) {
+            if(t.getClass().equals(Movie.class)) {
+                Movie m = (Movie) t;
+                System.out.format(formatString, m.getTitle(), m.getDirector(), m.getReleaseYear(), m.getRating());
+            }
         }
+    }
+
+    private Class getTitleImplementingClass(List<Title> listOfTitles){
+
+        return listOfTitles.get(0).getClass();
+    }
+
+    private String createListFormatting(String additionalFormatting){
+        String formatString = "%-20s  %-20s  %-10s" + additionalFormatting + " %n";
+        return formatString;
+    }
+
+    private void createListHeading(String titleType){
+        System.out.println("Available " + titleType);
+        System.out.println("________________\n");
     }
 
     public void displayMenuOptions(){
@@ -110,20 +137,20 @@ public class Biblioteca {
     public void evaluateMenuSelection(String userSelection, Scanner input){
         switch(userSelection){
             case "List of books":
-                displayAvailableBooks();
+                displayAvailableTitles("Book");
                 break;
             case "List of movies":
-                displayAvailableMovies();
+                displayAvailableTitles("Movie");
                 break;
             case "Checkout":
-                System.out.println("Which book would you like to check out?");
-                String bookToCheckOut = input.nextLine();
-                checkoutBook(bookToCheckOut);
+                System.out.println("What would you like to check out?");
+                String titleToCheckOut = input.nextLine();
+                checkoutTitle(titleToCheckOut);
                 break;
             case "Return":
-                System.out.println("Which book would you like to return?");
-                String bookToReturn = input.nextLine();
-                returnBook(bookToReturn);
+                System.out.println("What would you like to return?");
+                String titleToReturn = input.nextLine();
+                returnTitle(titleToReturn);
                 break;
             case "Quit":
                 quit = true;
@@ -133,49 +160,48 @@ public class Biblioteca {
 
     }
 
-    public void checkoutBook(String bookToCheckOut){
-        // look for the book in the "available" list
-        List<Integer> bookIndex = getBookIndex(bookToCheckOut, availableBooks);
-
-        if(bookIndex.isEmpty() == false){
-            // add the checked out book to the "checked out" list
-            checkedOutBooks.add(availableBooks.get(bookIndex.get(0).intValue()));
-            // remove it from the "available" list
-            availableBooks.remove(bookIndex.get(0).intValue());
-            // print a success message
-            System.out.println("Thank you! Enjoy the book");
-        } else{
-            System.out.println("Sorry, that book is not available");
-        }
-    }
-
-    public void returnBook(String bookToReturn){
+    public void checkoutTitle(String titleToCheckOut){
         // look for the book in the "checked out" list
-        List<Integer> bookIndex = getBookIndex(bookToReturn, checkedOutBooks);
+        List<Integer> titleIndex = getTitleIndex(titleToCheckOut, availableTitles);
 
-
-        if(bookIndex.isEmpty() == false){
-            // add the checked out book to the "available" list
-            availableBooks.add(checkedOutBooks.get(bookIndex.get(0).intValue()));
-            // remove it from the "checked out" list
-            checkedOutBooks.remove(bookIndex.get(0).intValue());
+        if(titleIndex.isEmpty() == false){
+            // add the checked out book to the "checked out" list
+            checkedOutTitles.add(availableTitles.get(titleIndex.get(0).intValue()));
+            // remove it from the "available" list
+            availableTitles.remove(titleIndex.get(0).intValue());
             // print a success message
-            System.out.println("Thank you for returning the book");
+            System.out.println("Thank you! Enjoy " + titleToCheckOut);
         } else{
-            System.out.println("This is not a valid book to return");
+            System.out.println("Sorry, that title is not available");
         }
     }
 
-    private List<Integer> getBookIndex(String bookToCheckOut, List<Book> listOfBooks){
+    public void returnTitle(String titleToReturn){
+        // look for the book in the "checked out" list
+        List<Integer> titleIndex = getTitleIndex(titleToReturn, checkedOutTitles);
 
-        List<Integer> bookIndex = new ArrayList<>();
+        if(titleIndex.isEmpty() == false){
+            // add the checked out book to the "available" list
+            availableTitles.add(checkedOutTitles.get(titleIndex.get(0).intValue()));
+            // remove it from the "checked out" list
+            checkedOutTitles.remove(titleIndex.get(0).intValue());
+            // print a success message
+            System.out.println("Thank you for returning " + titleToReturn);
+        } else{
+            System.out.println("This is not a valid title to return");
+        }
+    }
 
-        for(int i = 0; i < listOfBooks.size(); i++){
-            if(bookToCheckOut.equals(listOfBooks.get(i).getTitle())){
-                bookIndex.add(i);
+    private List<Integer> getTitleIndex(String titleToFind, List<Title> listOfTitles){
+
+        List<Integer> titleIndex = new ArrayList<>();
+
+        for(int i = 0; i < listOfTitles.size(); i++){
+            if(titleToFind.equals(listOfTitles.get(i).getTitle())){
+                titleIndex.add(i);
             }
         }
-        return bookIndex;
+        return titleIndex;
     }
 
     public String getWelcomeMsg() {
@@ -194,8 +220,8 @@ public class Biblioteca {
         this.menuOptions = menuOptions;
     }
 
-    public void setAvailableBooks(List<Book> availableBooks) {
-        this.availableBooks = availableBooks;
+    public void setAvailableTitles(List<Title> availableTitles) {
+        this.availableTitles = availableTitles;
     }
 
     public boolean doQuit() {

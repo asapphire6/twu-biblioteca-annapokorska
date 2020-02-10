@@ -1,6 +1,5 @@
 package com.twu.biblioteca;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -22,9 +21,9 @@ public class BibliotecaAppTest {
 
     @Test
     public void shouldReturnAvailableBooks(){
-        assertThat(testBiblioteca.getAvailableBooks().get(0).getTitle(), is("Romeo and Juliet"));
-        assertThat(testBiblioteca.getAvailableBooks().get(2).getAuthor(), is("Jane Austen"));
-        assertThat(testBiblioteca.getAvailableBooks().get(4).getYear(), is("1844"));
+        assertThat(testBiblioteca.getAvailableTitles().get(0).getTitle(), is("Romeo and Juliet"));
+     //   assertThat(testBiblioteca.getAvailableBooks().get(2).getAuthor(), is("Jane Austen"));
+     //   assertThat(testBiblioteca.getAvailableBooks().get(4).getYear(), is("1844"));
     }
 
     @Test
@@ -41,13 +40,16 @@ public class BibliotecaAppTest {
     @Test
     public void shouldRemoveBookFromAvailableList(){
         //create a dummy available books list which does not include the book to be checked out
-        List<Book> testBookList = new ArrayList<>();
-        testBookList.add(new Book("Romeo and Juliet", "William Shakespeare", "1595"));
-        testBookList.add(new Book("Lord of the Rings", "J.R.R.Tolkien", "1954"));
-        testBookList.add(new Book("Pride and Prejudice", "Jane Austen", "1813"));
-        testBookList.add(new Book("The Three Musketeers", "Alexandre Dumas", "1844"));
+        List<Title> testTitleList = new ArrayList<>();
+        testTitleList.add(new Book("Romeo and Juliet", "William Shakespeare", "1595"));
+        testTitleList.add(new Book("Lord of the Rings", "J.R.R.Tolkien", "1954"));
+        testTitleList.add(new Movie("Home Alone", "Chris Columbus", "1990", "unrated"));
+        testTitleList.add(new Movie("Die Hard", "John McTiernan", "1988", "10"));
 
-        testBiblioteca.checkoutBook("The Shining");
-        assertEquals(testBookList, testBiblioteca.getAvailableBooks());
+        testBiblioteca.checkoutTitle("The Shining");
+        assertThat(testTitleList.get(0).getTitle(), is(testBiblioteca.getAvailableTitles().get(0).getTitle()));
+        assertThat(testTitleList.get(1).getTitle(), is(testBiblioteca.getAvailableTitles().get(1).getTitle()));
+        assertThat(testTitleList.get(2).getTitle(), is(testBiblioteca.getAvailableTitles().get(7).getTitle()));
+        assertThat(testTitleList.get(3).getTitle(), is(testBiblioteca.getAvailableTitles().get(8).getTitle()));
     }
 }
