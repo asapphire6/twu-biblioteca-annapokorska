@@ -31,6 +31,7 @@ public class Biblioteca {
         this.menuOptions.add("List of movies");
         this.menuOptions.add("Checkout");
         this.menuOptions.add("Return");
+        this.menuOptions.add("Log In");
         this.menuOptions.add("Quit");
 
         this.checkedOutTitles = new ArrayList<>();
@@ -147,6 +148,9 @@ public class Biblioteca {
                 String titleToCheckOut = input.nextLine();
                 checkoutTitle(titleToCheckOut);
                 break;
+            case "Log in" :
+                
+                break;
             case "Return":
                 System.out.println("What would you like to return?");
                 String titleToReturn = input.nextLine();
@@ -156,6 +160,7 @@ public class Biblioteca {
                 quit = true;
                 System.out.println("Thank you for using Biblioteca");
                 break;
+
         }
 
     }
@@ -230,5 +235,13 @@ public class Biblioteca {
 
     public void setQuit(boolean quit) {
         this.quit = quit;
+    }
+
+    public List<Title> getCheckedOutTitles() {
+        return checkedOutTitles;
+    }
+
+    public void setCheckedOutTitles(List<Title> checkedOutTitles) {
+        this.checkedOutTitles = checkedOutTitles;
     }
 }
