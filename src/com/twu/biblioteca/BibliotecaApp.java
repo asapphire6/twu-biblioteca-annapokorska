@@ -1,5 +1,6 @@
 package com.twu.biblioteca;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class BibliotecaApp {
@@ -12,8 +13,8 @@ public class BibliotecaApp {
         System.out.println(newBiblioteca.getWelcome());
 
         while(newBiblioteca.doQuit() != true){
-            String menuToDisplay = newBiblioteca.getMenuType();
-            newBiblioteca.getMainMenu().displayMenu(menuToDisplay);
+            newBiblioteca.getDisplayMenu();
+            System.out.println("What would you like to do?");
             Scanner input = new Scanner(System.in);
             newBiblioteca.navigateMenu(input);
         }

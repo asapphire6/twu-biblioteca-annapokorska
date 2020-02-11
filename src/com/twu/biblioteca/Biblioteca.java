@@ -5,17 +5,17 @@ import java.util.*;
 public class Biblioteca {
 
     private String welcomeMsg;
-    private Menu mainMenu;
-    private String menuType;
+    private Menu menu;
     private List<Title> availableTitles;
     private List<Title> checkedOutTitles;
     private Map<String, User> userList;
+    private List<String> currentUserId;
     private boolean quit;
 
     public Biblioteca(){
 
-        this.mainMenu = new Menu();
-        this.menuType = "main";
+        this.menu = new QuitMenu (new LoginMenu (new MainMenu()));
+        menu.buildMenu();
 
         this.availableTitles = new ArrayList<>();
         this.availableTitles.add(new Book("Romeo and Juliet", "William Shakespeare", "1595"));
@@ -33,6 +33,7 @@ public class Biblioteca {
         this.userList = new HashMap<>();
         this.userList.put("123-4567", new User("Kelly Jones", "kellyjones@gmail.com", "07944679902", "london1"));
         this.userList.put("654-7960", new User("Dwain Johnson", "lildwaine@hotmail.com", "07555799900", "therock"));
+        this.currentUserId = new ArrayList<>();
 
         this.checkedOutTitles = new ArrayList<>();
 
@@ -86,11 +87,6 @@ public class Biblioteca {
         }
     }
 
-    private Class getTitleImplementingClass(List<Title> listOfTitles){
-
-        return listOfTitles.get(0).getClass();
-    }
-
     private String createListFormatting(String additionalFormatting){
         String formatString = "%-20s  %-20s  %-10s" + additionalFormatting + " %n";
         return formatString;
@@ -101,31 +97,44 @@ public class Biblioteca {
         System.out.println("________________\n");
     }
 
-    public void checkoutTitle(String titleToCheckOut){
+    public void checkoutTitle(String inputTitle){
         // look for the book in the "checked out" list
-        List<Integer> titleIndex = getTitleIndex(titleToCheckOut, availableTitles);
+        List<Integer> titleIndex = getTitleIndex(inputTitle, availableTitles);
 
         if(titleIndex.isEmpty() == false){
-            // add the checked out book to the "checked out" list
-            checkedOutTitles.add(availableTitles.get(titleIndex.get(0).intValue()));
+            Title titleToCheckOut = availableTitles.get(titleIndex.get(0).intValue());
+
+            // add the checked out title to the "checked out" list
+            checkedOutTitles.add(titleToCheckOut);
+
+            // add the title to the current user
+            System.out.println(userList.get(currentUserId).toString());
+            userList.get(currentUserId).addToCheckedOutTitles(titleToCheckOut);
+
             // remove it from the "available" list
             availableTitles.remove(titleIndex.get(0).intValue());
+
             // print a success message
-            System.out.println("Thank you! Enjoy " + titleToCheckOut);
+            System.out.println("Thank you! Enjoy " + inputTitle);
         } else{
             System.out.println("Sorry, that title is not available");
         }
     }
 
-    public void returnTitle(String titleToReturn){
+    public void returnTitle(String inputTitle){
         // look for the book in the "checked out" list
-        List<Integer> titleIndex = getTitleIndex(titleToReturn, checkedOutTitles);
+        List<Integer> titleIndex = getTitleIndex(inputTitle, checkedOutTitles);
 
         if(titleIndex.isEmpty() == false){
+            Title titleToReturn = checkedOutTitles.get(titleIndex.get(0).intValue());
+
             // add the checked out book to the "available" list
-            availableTitles.add(checkedOutTitles.get(titleIndex.get(0).intValue()));
+            availableTitles.add(titleToReturn);
             // remove it from the "checked out" list
-            checkedOutTitles.remove(titleIndex.get(0).intValue());
+            checkedOutTitles.remove(titleToReturn);
+
+            // remove the title from the current user
+            userList.get(currentUserId).returnCheckedOutTitle(titleToReturn);
             // print a success message
             System.out.println("Thank you for returning " + titleToReturn);
         } else{
@@ -149,17 +158,13 @@ public class Biblioteca {
         return quit;
     }
 
-    public List<Title> getCheckedOutTitles() {
-        return checkedOutTitles;
-    }
-
     public void navigateMenu(Scanner input) {
         String userMenuSelection;
         boolean askForInput = true;
 
         while(askForInput == true){
             userMenuSelection = input.nextLine();
-            boolean validation = mainMenu.validateMenuSelection(userMenuSelection);
+            boolean validation = menu.validateMenuSelection(userMenuSelection);
             if(validation == true) {
                 evaluateMainMenuSelection(userMenuSelection, input);
                 askForInput = false;
@@ -175,14 +180,32 @@ public class Biblioteca {
             case "List of movies":
                 displayAvailableTitles("Movie");
                 break;
-            case "Log in" :
-                boolean loginSuccessful = logInUser(input);
-                while(loginSuccessful == false){
-                    System.out.println("Incorrect library number and/or password!");
-                    logInUser(input);
+            case "Checkout":
+                System.out.println("What would you like to check out?");
+                String titleToCheckOut = input.nextLine();
+                if(titleToCheckOut.equals("Quit")){
+                    quit = true;
+                } else {
+                    checkoutTitle(titleToCheckOut);
                 }
-                menuType = "user";
-                evaluateLoginMenuSelection(userSelection, input);
+                break;
+            case "Return":
+                System.out.println("What would you like to return?");
+                String titleToReturn = input.nextLine();
+                if(titleToReturn.equals("Quit")){
+                    quit = true;
+                } else {
+                    returnTitle(titleToReturn);
+                }
+                break;
+            case "Log in" :
+                currentUserId = logInUser(input);
+                while(currentUserId.isEmpty() == true){
+                    System.out.println("Incorrect library number and/or password!");
+                    currentUserId = logInUser(input);
+                }
+                menu = new QuitMenu(new UserMenu(new MainMenu()));
+                menu.buildMenu();
                 break;
             case "Quit":
                 quit = true;
@@ -191,39 +214,27 @@ public class Biblioteca {
         }
     }
 
-    public void evaluateLoginMenuSelection(String userSelection, Scanner input){
-        switch (userSelection){
-            case "Checkout":
-                System.out.println("What would you like to check out?");
-                String titleToCheckOut = input.nextLine();
-                checkoutTitle(titleToCheckOut);
-                break;
-            case "Return":
-                System.out.println("What would you like to return?");
-                String titleToReturn = input.nextLine();
-                returnTitle(titleToReturn);
-                break;
-        }
-    }
-
-    public boolean logInUser(Scanner input){
+    public List<String> logInUser(Scanner input){
         System.out.println("Enter Library Number:");
         String inputLibraryNumber = input.nextLine();
         System.out.println("Enter Password:");
         String inputPassword = input.nextLine();
 
+        // create a placeholder for the user
+        List<String> currentUserId = new ArrayList<>();
+
         if(userList.containsKey(inputLibraryNumber) && userList.get(inputLibraryNumber).getPassword().equals(inputPassword)){
-            return true;
-        } else {
-            return false;
+            currentUserId.add(inputLibraryNumber);
         }
+        return currentUserId;
     }
 
-    public Menu getMainMenu() {
-        return mainMenu;
+    // this is horrible....
+    public void getDisplayMenu() {
+        menu.displayMenu();
     }
 
-    public String getMenuType(){
-        return menuType;
+    public Menu getMenu(){
+        return menu;
     }
 }
