@@ -1,18 +1,22 @@
 package com.twu.biblioteca;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Biblioteca {
 
     private String welcomeMsg;
-    private List<String> menuOptions;
+    private Menu mainMenu;
+    private String menuType;
     private List<Title> availableTitles;
     private List<Title> checkedOutTitles;
+    private Map<String, User> userList;
     private boolean quit;
 
     public Biblioteca(){
+
+        this.mainMenu = new Menu();
+        this.menuType = "main";
+
         this.availableTitles = new ArrayList<>();
         this.availableTitles.add(new Book("Romeo and Juliet", "William Shakespeare", "1595"));
         this.availableTitles.add(new Book("Lord of the Rings", "J.R.R.Tolkien", "1954"));
@@ -26,32 +30,14 @@ public class Biblioteca {
         this.availableTitles.add(new Movie("Home Alone", "Chris Columbus", "1990", "unrated"));
         this.availableTitles.add(new Movie("Die Hard", "John McTiernan", "1988", "10"));
 
-        this.menuOptions = new ArrayList<>();
-        this.menuOptions.add("List of books");
-        this.menuOptions.add("List of movies");
-        this.menuOptions.add("Checkout");
-        this.menuOptions.add("Return");
-        this.menuOptions.add("Log In");
-        this.menuOptions.add("Quit");
+        this.userList = new HashMap<>();
+        this.userList.put("123-4567", new User("Kelly Jones", "kellyjones@gmail.com", "07944679902", "london1"));
+        this.userList.put("654-7960", new User("Dwain Johnson", "lildwaine@hotmail.com", "07555799900", "therock"));
 
         this.checkedOutTitles = new ArrayList<>();
 
         this.welcomeMsg = "Welcome to Biblioteca. Your one-stop-shop for great book titles in Bangalore!\n";
         this.quit = false;
-    }
-
-    public void navigateMenu(Scanner input) {
-        String userMenuSelection;
-        boolean askForInput = true;
-
-        while(askForInput == true){
-            userMenuSelection = input.nextLine();
-            boolean validation = validateMenuSelection(userMenuSelection);
-            if(validation == true) {
-                evaluateMenuSelection(userMenuSelection, input);
-                askForInput = false;
-            }
-        }
     }
 
     public  String getWelcome() {
@@ -111,58 +97,8 @@ public class Biblioteca {
     }
 
     private void createListHeading(String titleType){
-        System.out.println("Available " + titleType);
+        System.out.println("\nAvailable " + titleType);
         System.out.println("________________\n");
-    }
-
-    public void displayMenuOptions(){
-        System.out.println("\nMenu:");
-        System.out.println("----");
-        for(String s : menuOptions){
-            System.out.println(s);
-        }
-        System.out.println("\nType Menu Selection and Press Enter:");
-
-    }
-
-    public boolean validateMenuSelection(String menuSelection){
-
-        if(menuOptions.contains(menuSelection)){
-            return true;
-        } else {
-            System.out.println("Please select a valid option!");
-            return false;
-        }
-    }
-
-    public void evaluateMenuSelection(String userSelection, Scanner input){
-        switch(userSelection){
-            case "List of books":
-                displayAvailableTitles("Book");
-                break;
-            case "List of movies":
-                displayAvailableTitles("Movie");
-                break;
-            case "Checkout":
-                System.out.println("What would you like to check out?");
-                String titleToCheckOut = input.nextLine();
-                checkoutTitle(titleToCheckOut);
-                break;
-            case "Log in" :
-                
-                break;
-            case "Return":
-                System.out.println("What would you like to return?");
-                String titleToReturn = input.nextLine();
-                returnTitle(titleToReturn);
-                break;
-            case "Quit":
-                quit = true;
-                System.out.println("Thank you for using Biblioteca");
-                break;
-
-        }
-
     }
 
     public void checkoutTitle(String titleToCheckOut){
@@ -209,39 +145,85 @@ public class Biblioteca {
         return titleIndex;
     }
 
-    public String getWelcomeMsg() {
-        return welcomeMsg;
-    }
-
-    public void setWelcomeMsg(String welcomeMsg) {
-        this.welcomeMsg = welcomeMsg;
-    }
-
-    public List<String> getMenuOptions() {
-        return menuOptions;
-    }
-
-    public void setMenuOptions(List<String> menuOptions) {
-        this.menuOptions = menuOptions;
-    }
-
-    public void setAvailableTitles(List<Title> availableTitles) {
-        this.availableTitles = availableTitles;
-    }
-
     public boolean doQuit() {
         return quit;
-    }
-
-    public void setQuit(boolean quit) {
-        this.quit = quit;
     }
 
     public List<Title> getCheckedOutTitles() {
         return checkedOutTitles;
     }
 
-    public void setCheckedOutTitles(List<Title> checkedOutTitles) {
-        this.checkedOutTitles = checkedOutTitles;
+    public void navigateMenu(Scanner input) {
+        String userMenuSelection;
+        boolean askForInput = true;
+
+        while(askForInput == true){
+            userMenuSelection = input.nextLine();
+            boolean validation = mainMenu.validateMenuSelection(userMenuSelection);
+            if(validation == true) {
+                evaluateMainMenuSelection(userMenuSelection, input);
+                askForInput = false;
+            }
+        }
+    }
+
+    public void evaluateMainMenuSelection(String userSelection, Scanner input){
+        switch(userSelection){
+            case "List of books":
+                displayAvailableTitles("Book");
+                break;
+            case "List of movies":
+                displayAvailableTitles("Movie");
+                break;
+            case "Log in" :
+                boolean loginSuccessful = logInUser(input);
+                while(loginSuccessful == false){
+                    System.out.println("Incorrect library number and/or password!");
+                    logInUser(input);
+                }
+                menuType = "user";
+                evaluateLoginMenuSelection(userSelection, input);
+                break;
+            case "Quit":
+                quit = true;
+                System.out.println("Thank you for using Biblioteca");
+                break;
+        }
+    }
+
+    public void evaluateLoginMenuSelection(String userSelection, Scanner input){
+        switch (userSelection){
+            case "Checkout":
+                System.out.println("What would you like to check out?");
+                String titleToCheckOut = input.nextLine();
+                checkoutTitle(titleToCheckOut);
+                break;
+            case "Return":
+                System.out.println("What would you like to return?");
+                String titleToReturn = input.nextLine();
+                returnTitle(titleToReturn);
+                break;
+        }
+    }
+
+    public boolean logInUser(Scanner input){
+        System.out.println("Enter Library Number:");
+        String inputLibraryNumber = input.nextLine();
+        System.out.println("Enter Password:");
+        String inputPassword = input.nextLine();
+
+        if(userList.containsKey(inputLibraryNumber) && userList.get(inputLibraryNumber).getPassword().equals(inputPassword)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Menu getMainMenu() {
+        return mainMenu;
+    }
+
+    public String getMenuType(){
+        return menuType;
     }
 }

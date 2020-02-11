@@ -12,7 +12,8 @@ public class BibliotecaApp {
         System.out.println(newBiblioteca.getWelcome());
 
         while(newBiblioteca.doQuit() != true){
-            newBiblioteca.displayMenuOptions();
+            String menuToDisplay = newBiblioteca.getMenuType();
+            newBiblioteca.getMainMenu().displayMenu(menuToDisplay);
             Scanner input = new Scanner(System.in);
             newBiblioteca.navigateMenu(input);
         }

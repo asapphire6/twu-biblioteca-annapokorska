@@ -22,19 +22,16 @@ public class BibliotecaAppTest {
     @Test
     public void shouldReturnAvailableBooks(){
         assertThat(testBiblioteca.getAvailableTitles().get(0).getTitle(), is("Romeo and Juliet"));
-     //   assertThat(testBiblioteca.getAvailableBooks().get(2).getAuthor(), is("Jane Austen"));
-     //   assertThat(testBiblioteca.getAvailableBooks().get(4).getYear(), is("1844"));
     }
 
     @Test
     public void shouldReturnFalseOnInvalidMenuSelection(){
-        Scanner input = new Scanner(System.in);
-        assertFalse("Menu selection is valid: ", testBiblioteca.validateMenuSelection("List"));
+        assertFalse("Menu selection is valid: ", testBiblioteca.getMainMenu().validateMenuSelection("List"));
     }
 
     @Test
     public void shouldReturnTrueOnValidMenuSelection(){
-        assertTrue("Menu selection is valid: ", testBiblioteca.validateMenuSelection("List of books"));
+        assertTrue("Menu selection is valid: ", testBiblioteca.getMainMenu().validateMenuSelection("List of books"));
     }
 
     @Test
@@ -67,4 +64,9 @@ public class BibliotecaAppTest {
         assertThat(testCheckedOutList.get(0).getTitle(), is(testBiblioteca.getCheckedOutTitles().get(0).getTitle()));
         assertThat(testCheckedOutList.get(1).getTitle(), is(testBiblioteca.getCheckedOutTitles().get(1).getTitle()));
     }
+
+//    @Test
+//    public void shouldReturnTrueOnSuccessfulLogin(){
+//        assertTrue(testBiblioteca.evaluateMainMenuSelection(););
+//    }
 }
