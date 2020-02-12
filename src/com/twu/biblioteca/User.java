@@ -9,17 +9,19 @@ public class User {
     private String email;
     private String phoneNumber;
     private String password;
+    private String libraryNumber;
     private List<Title> checkedOutTitles;
 
     public User(){
 
     }
 
-    public User(String name, String email, String phoneNumber, String password) {
+    public User(String name, String email, String phoneNumber, String password, String libraryNumber) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.password = password;
+        this.libraryNumber = libraryNumber;
         this.checkedOutTitles = new ArrayList<>();
     }
 
@@ -41,11 +43,20 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+
+        StringBuilder userRecord = new StringBuilder("Name: " + name + ", ");
+        userRecord.append("Email: " + email + ", ");
+        userRecord.append("Phone Number: " + phoneNumber + ", ");
+        userRecord.append("Library Number: " + libraryNumber);
+        userRecord.append(", Titles Checked Out: " );
+
+        if(checkedOutTitles.isEmpty() == false) {
+            for (Title t : checkedOutTitles) {
+                userRecord.append(t.getTitle() + ", ");
+            }
+        } else {
+            userRecord.append(" None");
+        }
+        return userRecord.toString();
     }
 }

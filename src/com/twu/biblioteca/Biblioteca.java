@@ -31,8 +31,8 @@ public class Biblioteca {
         this.availableTitles.add(new Movie("Die Hard", "John McTiernan", "1988", "10"));
 
         this.userList = new HashMap<>();
-        this.userList.put("123-4567", new User("Kelly Jones", "kellyjones@gmail.com", "07944679902", "london1"));
-        this.userList.put("654-7960", new User("Dwain Johnson", "lildwaine@hotmail.com", "07555799900", "therock"));
+        this.userList.put("123-4567", new User("Kelly Jones", "kellyjones@gmail.com", "07944679902", "london1", "123-4567"));
+        this.userList.put("654-7960", new User("Dwain Johnson", "lildwaine@hotmail.com", "07555799900", "therock", "654-7960"));
 
         this.checkedOutTitles = new ArrayList<>();
 
@@ -182,7 +182,7 @@ public class Biblioteca {
                 displayAvailableTitles("Movie");
                 break;
             case "List of users":
-                System.out.println(userList.entrySet().toString());
+                displayUsers();
                 break;
             case "Checkout":
                 System.out.println("What would you like to check out?");
@@ -235,6 +235,14 @@ public class Biblioteca {
     // this is horrible....
     public void getDisplayMenu() {
         menu.displayMenu();
+    }
+
+    public void displayUsers(){
+        System.out.println("Registered users:");
+        System.out.println("----------------");
+        for(Map.Entry<String, User> u : userList.entrySet()){
+            System.out.println(u.getValue().toString());
+        }
     }
 
     public Menu getMenu(){
