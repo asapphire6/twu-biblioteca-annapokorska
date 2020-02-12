@@ -9,7 +9,7 @@ public class Biblioteca {
     private List<Title> availableTitles;
     private List<Title> checkedOutTitles;
     private Map<String, User> userList;
-    private List<String> currentUserId;
+    private String currentUserId;
     private boolean quit;
 
     public Biblioteca(){
@@ -33,7 +33,6 @@ public class Biblioteca {
         this.userList = new HashMap<>();
         this.userList.put("123-4567", new User("Kelly Jones", "kellyjones@gmail.com", "07944679902", "london1"));
         this.userList.put("654-7960", new User("Dwain Johnson", "lildwaine@hotmail.com", "07555799900", "therock"));
-        this.currentUserId = new ArrayList<>();
 
         this.checkedOutTitles = new ArrayList<>();
 
@@ -100,6 +99,8 @@ public class Biblioteca {
     public void checkoutTitle(String inputTitle){
         // look for the book in the "checked out" list
         List<Integer> titleIndex = getTitleIndex(inputTitle, availableTitles);
+        System.out.println("Title to check out: " + inputTitle + "\n" + titleIndex);
+
 
         if(titleIndex.isEmpty() == false){
             Title titleToCheckOut = availableTitles.get(titleIndex.get(0).intValue());
@@ -136,7 +137,7 @@ public class Biblioteca {
             // remove the title from the current user
             userList.get(currentUserId).returnCheckedOutTitle(titleToReturn);
             // print a success message
-            System.out.println("Thank you for returning " + titleToReturn);
+            System.out.println("Thank you for returning " + inputTitle);
         } else{
             System.out.println("This is not a valid title to return");
         }
@@ -180,6 +181,9 @@ public class Biblioteca {
             case "List of movies":
                 displayAvailableTitles("Movie");
                 break;
+            case "List of users":
+                System.out.println(userList.entrySet().toString());
+                break;
             case "Checkout":
                 System.out.println("What would you like to check out?");
                 String titleToCheckOut = input.nextLine();
@@ -199,10 +203,10 @@ public class Biblioteca {
                 }
                 break;
             case "Log in" :
-                currentUserId = logInUser(input);
-                while(currentUserId.isEmpty() == true){
+                boolean loginSuccessful = logInUser(input);
+                while(loginSuccessful == false){
                     System.out.println("Incorrect library number and/or password!");
-                    currentUserId = logInUser(input);
+                    loginSuccessful = logInUser(input);
                 }
                 menu = new QuitMenu(new UserMenu(new MainMenu()));
                 menu.buildMenu();
@@ -214,19 +218,18 @@ public class Biblioteca {
         }
     }
 
-    public List<String> logInUser(Scanner input){
+    public boolean logInUser(Scanner input){
         System.out.println("Enter Library Number:");
         String inputLibraryNumber = input.nextLine();
         System.out.println("Enter Password:");
         String inputPassword = input.nextLine();
 
-        // create a placeholder for the user
-        List<String> currentUserId = new ArrayList<>();
-
         if(userList.containsKey(inputLibraryNumber) && userList.get(inputLibraryNumber).getPassword().equals(inputPassword)){
-            currentUserId.add(inputLibraryNumber);
+            currentUserId = inputLibraryNumber;
+            return true;
+        } else {
+            return false;
         }
-        return currentUserId;
     }
 
     // this is horrible....
