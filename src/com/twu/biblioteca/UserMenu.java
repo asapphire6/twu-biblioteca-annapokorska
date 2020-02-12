@@ -12,6 +12,7 @@ public class UserMenu extends MenuDecorator {
         this.userMenuOptions = new ArrayList<>();
         this.userMenuOptions.add("Checkout");
         this.userMenuOptions.add("Return");
+        this.userMenuOptions.add("Account info");
     }
 
     public void displayMenu(){

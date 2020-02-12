@@ -202,12 +202,16 @@ public class Biblioteca {
                     returnTitle(titleToReturn);
                 }
                 break;
+            case "Account info":
+                System.out.println(userList.get(currentUserId).toString());
+                break;
             case "Log in" :
                 boolean loginSuccessful = logInUser(input);
                 while(loginSuccessful == false){
                     System.out.println("Incorrect library number and/or password!");
                     loginSuccessful = logInUser(input);
                 }
+                System.out.println("Welcome " + userList.get(currentUserId).getName() + "!");
                 menu = new QuitMenu(new UserMenu(new MainMenu()));
                 menu.buildMenu();
                 break;
